@@ -57,5 +57,20 @@ daily$na <- as.factor(daily$na)
 g <- ggplot(data=daily, aes(total_steps))
 g + geom_histogram (aes(fill=na)) + facet_grid(. ~na)
 
+##Are there differences in activity patterns between weekdays and weekends?
+Sys.setlocale("LC_TIME", "English")
+steps_activity2$day <- weekdays(as.Date(steps_activity2$date))
 
+for (i in seq_len(nrow(steps_activity2))) {
+        if (steps_activity2[i,4] %in% "Saturday" | steps_activity2[i,4] %in% "Sunday" )  {
+                steps_activity2[i,4] <- "Weekend"
+        } else {steps_activity2[i,4] <- "Weekday"
+        }
+}
 
+steps_activity2$day<-as.factor(steps_activity2$day)
+        
+meaninterval2 <- ddply (steps_activity2, .(day, interval), summarise, meansteps=mean(steps))        
+        
+g <- ggplot (meaninterval2, aes(interval, meansteps))
+g+geom_line(aes(color=day))
